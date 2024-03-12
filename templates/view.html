@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for task in tasks %}
+
+        <row>
+            <tr>
+                <td>Title: {{ task.title }} </td>
+                <td>Description: {{ task.description }} </td>
+                <td>Status: {{ task.status.value }} </td>
+                <td>Due Date: {{ task.due_date }}</td>
+                <br>
+
+           </tr>
+        </row>
+    {% endfor %}
+</body>
+</html>
