@@ -62,8 +62,8 @@ def add_todo():
         new_todo = task(title=title, description=description, status=status, due_date=due_date)
         db.session.add(new_todo)
         db.session.commit()
-
-    return "added"
+    return jsonify({'message': 'New todo created!'}), 200
+    # return render_template('view.html', tasks=task.query.all())
 # delete records from a table
 # db.session.delete (model object)
 
