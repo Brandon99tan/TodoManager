@@ -26,7 +26,7 @@
                     <form action="/add_todo" method="POST">
                         <div class="mb-3">
                             <label for="title" class="col-form-label">Title:</label>
-                            <input type="text" class="form-control" id="title" required>
+                            <input type="text" class="form-control" id="title">
                         </div>
                         <div class="mb-3">
                             <label for="description" class="col-form-label">Description:</label>
@@ -43,7 +43,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="Due Date" class="col-form-label">Due Date:</label>
-                            <input type="date" id="due_date" required>
+                            <input type="date" id="due_date">
                         </div>
                     </form>
                 </div>
@@ -71,7 +71,8 @@
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#editModal{{ task.id }}">Edit Task
                                 </button>
-                                <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i class="fa-regular fa-trash-can" ></i>
+                                <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i
+                                        class="fa-regular fa-trash-can"></i>
                                 </button>
                                 <div class="modal fade" id="editModal{{ task.id }}" tabindex="-1"
                                      aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -88,13 +89,13 @@
                                                     <div class="mb-3">
                                                         <label for="title" class="col-form-label">Title:</label>
                                                         <textarea class="form-control" id="title_edit{{ task.id }}"
-                                                                  required>{{ task.title }}</textarea>
+                                                        >{{ task.title }}</textarea>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="description"
                                                                class="col-form-label">Description:</label>
                                                         <textarea class="form-control"
-                                                                  id="description_edit{{ task.id }}" >{{ task.description }}</textarea>
+                                                                  id="description_edit{{ task.id }}">{{ task.description }}</textarea>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="status" class="col-form-label">Status:</label>
@@ -108,7 +109,8 @@
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="Due Date" class="col-form-label">Due Date:</label>
-                                                        <input type="date" id="due_date_edit{{ task.id }}" value = {{ task.due_date|default('') }} required>
+                                                        <input type="date" id="due_date_edit{{ task.id }}"
+                                                               value= {{ task.due_date|default('') }}>
                                                     </div>
                                                 </form>
                                             </div>
@@ -139,10 +141,11 @@
                                 <h5 class="card-title">{{ task.title }}</h5>
                                 <p class="card-text">{{ task.description }}</p>
                                 <p class="card-text">Due: {{ task.due_date }}</p>
-                           <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#editModal{{ task.id }}">Edit Task
                                 </button>
-                                <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i class="fa-regular fa-trash-can" ></i>
+                                <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i
+                                        class="fa-regular fa-trash-can"></i>
                                 </button>
                                 <div class="modal fade" id="editModal{{ task.id }}" tabindex="-1"
                                      aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -158,8 +161,8 @@
                                                     <input type="hidden" id="task_id" value="{{ task.id }}">
                                                     <div class="mb-3">
                                                         <label for="title" class="col-form-label">Title:</label>
-                                                        <textarea class="form-control" id="title_edit{{ task.id }}"
-                                                                  value= {{ task.title }} required>{{ task.title }}</textarea>
+                                                        <textarea class="form-control"
+                                                                  id="title_edit{{ task.id }}">{{ task.title }}</textarea>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="description"
@@ -170,7 +173,7 @@
                                                     <div class="mb-3">
                                                         <label for="status" class="col-form-label">Status:</label>
                                                         <select class="form-select" aria-label="Default select example"
-                                                                id="status_edit{{ task.id }}" >
+                                                                id="status_edit{{ task.id }}">
 
                                                             <option value="Backlog">To do</option>
                                                             <option selected value="Pending">In Progress</option>
@@ -179,7 +182,8 @@
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="Due Date" class="col-form-label">Due Date:</label>
-                                                        <input type="date" id="due_date_edit{{ task.id }} required" value = {{ task.due_date }}>
+                                                        <input type="date" id="due_date_edit{{ task.id }}"
+                                                               value= {{ task.due_date }}>
                                                     </div>
                                                 </form>
                                             </div>
@@ -210,10 +214,11 @@
                                 <h5 class="card-title"> {{ task.title }}</h5>
                                 <p class="card-text"> {{ task.description }}</p>
                                 <p class="card-text">Due: {{ task.due_date }}</p>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#editModal{{ task.id }}">Edit Task
                                 </button>
-                                <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i class="fa-regular fa-trash-can" ></i>
+                                <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i
+                                        class="fa-regular fa-trash-can"></i>
                                 </button>
                                 <div class="modal fade" id="editModal{{ task.id }}" tabindex="-1"
                                      aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -230,7 +235,7 @@
                                                     <div class="mb-3">
                                                         <label for="title" class="col-form-label">Title:</label>
                                                         <textarea class="form-control" id="title_edit{{ task.id }}"
-                                                                  value= {{ task.title }} required>{{ task.title }}</textarea>
+                                                        >{{ task.title }}</textarea>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="description"
@@ -250,7 +255,8 @@
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="Due Date" class="col-form-label">Due Date:</label>
-                                                        <input type="date" id="due_date_edit{{ task.id }} required" value = {{ task.due_date }}>
+                                                        <input type="date" id="due_date_edit{{ task.id }}"
+                                                               value= {{ task.due_date }}>
                                                     </div>
                                                 </form>
                                             </div>
@@ -292,7 +298,7 @@
         const status = document.getElementById("status").value;
         const due_date = document.getElementById("due_date").value;
 
-        if (title === '' || dueDate === '') {
+        if (title === '' || due_date === '') {
             // If any required field is empty, display an alert message
             alert('Please fill out all title and due_date');
             return; // Exit function, form submission is prevented
@@ -330,14 +336,14 @@
     }
 
     function submitformUpdate(taskID) {
-        const title = document.getElementById("title_edit"+taskID).value;
-        const description = document.getElementById("description_edit"+taskID).value;
-        const status = document.getElementById("status_edit"+taskID).value;
-        const due_date = document.getElementById("due_date_edit"+taskID).value;
-        if (title === '' || dueDate === '') {
-        // If any required field is empty, display an alert message
-        alert('Please fill out all title and due_date');
-        return; // Exit function, form submission is prevented
+        const title = document.getElementById("title_edit" + taskID).value;
+        const description = document.getElementById("description_edit" + taskID).value;
+        const status = document.getElementById("status_edit" + taskID).value;
+        const due_date = document.getElementById("due_date_edit" + taskID).value;
+        if (title === '' || due_date === '') {
+            // If any required field is empty, display an alert message
+            alert('Please fill out all title and due_date');
+            return; // Exit function, form submission is prevented
         }
         var formData = {
             id: taskID,
@@ -372,7 +378,7 @@
             });
     }
 
-    function deleteTask(taskID){
+    function deleteTask(taskID) {
         fetch('/delete_todo', {
             method: 'DELETE',
             headers: {
