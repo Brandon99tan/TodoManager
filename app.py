@@ -37,18 +37,11 @@ db.create_all()
 
 @app.route('/')
 def hello_world():
-    print(task.query.filter_by(id = 1).all())
-    # v = task.query.filter_by(id = 1).all()
-    v=task.query.all()
+
+    Tasks=task.query.all()
     #print each task
-    for task1 in task.query.all():
-        print(task1,"task1")
-        print(task1.id, "task1.task_id")
-        print(task1.title, "task1.title")
-        print(task1.description, "task1.description")
-        print(task1.status.value, "task1.status")
-        print(task1.due_date, "task1.due_date")
-    return render_template('view.html', tasks=v)
+
+    return render_template('view.html', tasks=Tasks)
 
 
 @app.route('/add_todo', methods=['POST'])
@@ -58,6 +51,7 @@ def add_todo():
         description = request.json['description']
         status = request.json['status']
         due_date = request.json['due_date']
+        print("*-*-*-*-*-*-*-*-*-*-*-*",due_date, "due_date")
         due_date = datetime.strptime(due_date, '%Y-%m-%d')
         new_todo = task(title=title, description=description, status=status, due_date=due_date)
         db.session.add(new_todo)
@@ -65,8 +59,34 @@ def add_todo():
     return jsonify({'message': 'New todo created!'}), 200
     # return render_template('view.html', tasks=task.query.all())
 # delete records from a table
-# db.session.delete (model object)
+@app.route('/delete_todo', methods=['DELETE'])
+def delete_todo():
+    if request.method == 'DELETE':
+        id = request.json['id']
+        todo = task.query.filter_by(id=id).first()
+        db.session.delete(todo)
+        db.session.commit()
+    return jsonify({'message': 'Todo deleted!'}), 200
+    # return render_template('view.html', tasks=task.query.all())
 
+#edit records from a table
+@app.route('/edit_todo', methods=['PUT'])
+def edit_todo():
+    if request.method == 'PUT':
+        id = request.json['id']
+        title = request.json['title']
+        description = request.json['description']
+        status = request.json['status']
+        due_date = request.json['due_date']
+        print(due_date, "due_date")
+        due_date = datetime.strptime(due_date, '%Y-%m-%d')
+        todo = task.query.filter_by(id=id).first()
+        todo.title = title
+        todo.description = description
+        todo.status = status
+        todo.due_date = due_date
+        db.session.commit()
+    return jsonify({'message': 'Todo updated!'}), 200
 # students.query.filter_by(city = ’Tokyo’).all()
 
 if __name__ == '__main__':

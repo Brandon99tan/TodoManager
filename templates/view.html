@@ -1,94 +1,323 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://kit.fontawesome.com/090585def0.js" crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Title</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Task Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
 </head>
 <body>
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" >Create New Task</button>
+<div class="container">
+    <h1>Task Manager</h1>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Create New
+        Task
+    </button>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="createNewTask">New Task</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form action="/add_todo" method="POST">
-          <div class="mb-3">
-            <label for="title" class="col-form-label">Title:</label>
-            <input type="text" class="form-control" id="title">
-          </div>
-            <div class="mb-3">
-                <label for="description" class="col-form-label">Description:</label>
-                <input type="text" class="form-control" id="description">
-            </div>
-            <div class="mb-3">
-                <label for="status" class="col-form-label">Status:</label>
-                <select class="form-select" aria-label="Default select example" id="status">
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="createNewTask">New Task</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/add_todo" method="POST">
+                        <div class="mb-3">
+                            <label for="title" class="col-form-label">Title:</label>
+                            <input type="text" class="form-control" id="title" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="col-form-label">Description:</label>
+                            <input type="text" class="form-control" id="description">
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="col-form-label">Status:</label>
+                            <select class="form-select" aria-label="Default select example" id="status">
 
-                    <option selected value="Backlog">To do</option>
-                    <option value="Pending">In Progress</option>
-                    <option value="Done">Finished</option>
-                </select>
+                                <option selected value="Backlog">To do</option>
+                                <option value="Pending">In Progress</option>
+                                <option value="Done">Finished</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="Due Date" class="col-form-label">Due Date:</label>
+                            <input type="date" id="due_date" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitForm()">Create Task</button>
+                </div>
             </div>
-          <div class="mb-3">
-            <label for="Due Date" class="col-form-label">Due Date:</label>
-            <input type="date" id="due_date">
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary"onclick="submitForm()">Create Task</button>
-      </div>
+        </div>
     </div>
-  </div>
+    <br>
+
+    <div class="row">
+        <div class="col">
+            <div>
+                <h2>Backlog</h2>
+                {% for task in tasks %}
+                    {% if task.status.value == "Backlog" %}
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ task.title }}</h5>
+                                <p class="card-text">{{ task.description }}</p>
+                                <p class="card-text">Due: {{ task.due_date }}</p>
+
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#editModal{{ task.id }}">Edit Task
+                                </button>
+                                <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i class="fa-regular fa-trash-can" ></i>
+                                </button>
+                                <div class="modal fade" id="editModal{{ task.id }}" tabindex="-1"
+                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="EditModal">Edit Task</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="editForm{{ task.id }}" action="/edit_todo" method="POST">
+                                                    <input type="hidden" id="task_id" value="{{ task.id }}">
+                                                    <div class="mb-3">
+                                                        <label for="title" class="col-form-label">Title:</label>
+                                                        <textarea class="form-control" id="title_edit{{ task.id }}"
+                                                                  required>{{ task.title }}</textarea>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="description"
+                                                               class="col-form-label">Description:</label>
+                                                        <textarea class="form-control"
+                                                                  id="description_edit{{ task.id }}" >{{ task.description }}</textarea>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="status" class="col-form-label">Status:</label>
+                                                        <select class="form-select" aria-label="Default select example"
+                                                                id="status_edit{{ task.id }}">
+
+                                                            <option selected value="Backlog">To do</option>
+                                                            <option value="Pending">In Progress</option>
+                                                            <option value="Done">Finished</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="Due Date" class="col-form-label">Due Date:</label>
+                                                        <input type="date" id="due_date_edit{{ task.id }}" value = {{ task.due_date|default('') }} required>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    Close
+                                                </button>
+                                                <button type="button" class="btn btn-primary"
+                                                        onclick="submitformUpdate({{ task.id }})">Edit Task
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col">
+            <div>
+                <h2>Pending</h2>
+                {% for task in tasks %}
+                    {% if task.status.value == "In Progress" %}
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ task.title }}</h5>
+                                <p class="card-text">{{ task.description }}</p>
+                                <p class="card-text">Due: {{ task.due_date }}</p>
+                           <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#editModal{{ task.id }}">Edit Task
+                                </button>
+                                <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i class="fa-regular fa-trash-can" ></i>
+                                </button>
+                                <div class="modal fade" id="editModal{{ task.id }}" tabindex="-1"
+                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="EditModal">Edit Task</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="editForm{{ task.id }}" action="/edit_todo" method="POST">
+                                                    <input type="hidden" id="task_id" value="{{ task.id }}">
+                                                    <div class="mb-3">
+                                                        <label for="title" class="col-form-label">Title:</label>
+                                                        <textarea class="form-control" id="title_edit{{ task.id }}"
+                                                                  value= {{ task.title }} required>{{ task.title }}</textarea>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="description"
+                                                               class="col-form-label">Description:</label>
+                                                        <textarea class="form-control"
+                                                                  id="description_edit{{ task.id }}">{{ task.description }}</textarea>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="status" class="col-form-label">Status:</label>
+                                                        <select class="form-select" aria-label="Default select example"
+                                                                id="status_edit{{ task.id }}" >
+
+                                                            <option value="Backlog">To do</option>
+                                                            <option selected value="Pending">In Progress</option>
+                                                            <option value="Done">Finished</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="Due Date" class="col-form-label">Due Date:</label>
+                                                        <input type="date" id="due_date_edit{{ task.id }} required" value = {{ task.due_date }}>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    Close
+                                                </button>
+                                                <button type="button" class="btn btn-primary"
+                                                        onclick="submitformUpdate({{ task.id }})">Edit Task
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col">
+            <div>
+                <h2>Done</h2>
+                {% for task in tasks %}
+                    {% if task.status.value == "Done" %}
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title"> {{ task.title }}</h5>
+                                <p class="card-text"> {{ task.description }}</p>
+                                <p class="card-text">Due: {{ task.due_date }}</p>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#editModal{{ task.id }}">Edit Task
+                                </button>
+                                <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i class="fa-regular fa-trash-can" ></i>
+                                </button>
+                                <div class="modal fade" id="editModal{{ task.id }}" tabindex="-1"
+                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="EditModal">Edit Task</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="editForm{{ task.id }}" action="/edit_todo" method="POST">
+                                                    <input type="hidden" id="task_id" value="{{ task.id }}">
+                                                    <div class="mb-3">
+                                                        <label for="title" class="col-form-label">Title:</label>
+                                                        <textarea class="form-control" id="title_edit{{ task.id }}"
+                                                                  value= {{ task.title }} required>{{ task.title }}</textarea>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="description"
+                                                               class="col-form-label">Description:</label>
+                                                        <textarea class="form-control"
+                                                                  id="description_edit{{ task.id }}">{{ task.description }}</textarea>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="status" class="col-form-label">Status:</label>
+                                                        <select class="form-select" aria-label="Default select example"
+                                                                id="status_edit{{ task.id }}">
+
+                                                            <option value="Backlog">To do</option>
+                                                            <option value="Pending">In Progress</option>
+                                                            <option selected value="Done">Finished</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="Due Date" class="col-form-label">Due Date:</label>
+                                                        <input type="date" id="due_date_edit{{ task.id }} required" value = {{ task.due_date }}>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    Close
+                                                </button>
+                                                <button type="button" class="btn btn-primary"
+                                                        onclick="submitformUpdate({{ task.id }})">Edit Task
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
-<br>
-    {% for task in tasks %}
 
-        <row>
-            <tr>
-                <td>Task ID: {{ task.id }} </td>
-                <td>Title: {{ task.title }} </td>
-                <td>Description: {{ task.description }} </td>
-                <td>Status: {{ task.status.value }} </td>
-                <td>Due Date: {{ task.due_date }}</td>
-                <br>
 
-           </tr>
-        </row>
-    {% endfor %}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-    <script>
-        function submitForm() {
-            var formData = {
-                title: document.getElementById("title").value,
-                description: document.getElementById("description").value,
-                status: document.getElementById("status").value,
-                due_date: document.getElementById("due_date").value
-            };
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+        integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy"
+        crossorigin="anonymous"></script>
+<script>
+    function submitForm() {
+        const title = document.getElementById("title").value;
 
-            fetch('/add_todo', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
+        const description = document.getElementById("description").value;
+        const status = document.getElementById("status").value;
+        const due_date = document.getElementById("due_date").value;
+
+        if (title === '' || dueDate === '') {
+            // If any required field is empty, display an alert message
+            alert('Please fill out all title and due_date');
+            return; // Exit function, form submission is prevented
+        }
+        var formData = {
+            title: title,
+            description: description,
+            status: status,
+            due_date: due_date
+        };
+
+        fetch('/add_todo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
             .then(response => {
-              if (response.ok) {
-                // Redirect to home page upon successful submission
-                window.location.href = "/";
-              } else {
-                console.error('Error:', response.statusText);
-              }
+                if (response.ok) {
+                    // Redirect to home page upon successful submission
+                    window.location.href = "/";
+                } else {
+                    console.error('Error:', response.statusText);
+                }
             })
             .then(data => {
                 console.log(data);
@@ -98,8 +327,77 @@
                 console.error('There was a problem with the fetch operation:', error);
                 // Handle error
             });
+    }
+
+    function submitformUpdate(taskID) {
+        const title = document.getElementById("title_edit"+taskID).value;
+        const description = document.getElementById("description_edit"+taskID).value;
+        const status = document.getElementById("status_edit"+taskID).value;
+        const due_date = document.getElementById("due_date_edit"+taskID).value;
+        if (title === '' || dueDate === '') {
+        // If any required field is empty, display an alert message
+        alert('Please fill out all title and due_date');
+        return; // Exit function, form submission is prevented
         }
-    </script>
+        var formData = {
+            id: taskID,
+            title: title,
+            description: description,
+            status: status,
+            due_date: due_date
+        };
+
+        fetch('/edit_todo', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Redirect to home page upon successful submission
+                    window.location.href = "/";
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            })
+            .then(data => {
+                console.log(data);
+                // Handle success response
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                // Handle error
+            });
+    }
+
+    function deleteTask(taskID){
+        fetch('/delete_todo', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({id: taskID})
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Redirect to home page upon successful submission
+                    window.location.href = "/";
+                } else {
+                    console.error('Error:', response.statusText);
+                }
+            })
+            .then(data => {
+                console.log(data);
+                // Handle success response
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                // Handle error
+            });
+    }
+</script>
 
 
 </body>
