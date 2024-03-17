@@ -47,12 +47,24 @@ def hello_world():
 @app.route('/add_todo', methods=['POST'])
 def add_todo():
     if request.method == 'POST':
-        title = request.json['title']
-        description = request.json['description']
-        status = request.json['status']
-        due_date = request.json['due_date']
-        print("*-*-*-*-*-*-*-*-*-*-*-*",due_date, "due_date")
-        due_date = datetime.strptime(due_date, '%Y-%m-%d')
+        try:
+            title = request.json['title']
+            if not title:
+                return jsonify({'error': 'Title cannot be empty'}), 400
+            description = request.json['description']
+            status = request.json['status']
+            if status not in ['pending', 'backlog', 'Done']:
+                return jsonify({'error': 'Invalid status, Please only put "Pending","Done","Backlog"'}), 400
+            due_date = request.json['due_date']
+            if not due_date:
+                return jsonify({'error': 'Due date cannot be empty'}), 400
+            try:
+                due_date = datetime.strptime(due_date, '%Y-%m-%d')
+            except:
+                return jsonify({'error': 'Invalid date format, Please use YYYY-mm-dd'}), 400
+        except KeyError :
+            return jsonify({'Invalid JSON Key': "Ensure the following keys exist 'title','status','due_date','description'"}), 400
+
         new_todo = task(title=title, description=description, status=status, due_date=due_date)
         db.session.add(new_todo)
         db.session.commit()
@@ -73,13 +85,25 @@ def delete_todo():
 @app.route('/edit_todo', methods=['PUT'])
 def edit_todo():
     if request.method == 'PUT':
-        id = request.json['id']
-        title = request.json['title']
-        description = request.json['description']
-        status = request.json['status']
-        due_date = request.json['due_date']
-        print(due_date, "due_date")
-        due_date = datetime.strptime(due_date, '%Y-%m-%d')
+        try:
+            id = request.json['id']
+            title = request.json['title']
+            if not title:
+                return jsonify({'error': 'Title cannot be empty'}), 400
+            description = request.json['description']
+            status = request.json['status']
+            if status not in ['pending', 'backlog', 'Done']:
+                return jsonify({'error': 'Invalid status, Please only put "Pending","Done","Backlog"'}), 400
+            due_date = request.json['due_date']
+            if not due_date:
+                return jsonify({'error': 'Due date cannot be empty'}), 400
+            try:
+                due_date = datetime.strptime(due_date, '%Y-%m-%d')
+            except:
+                return jsonify({'error': 'Invalid date format, Please use YYYY-mm-dd'}), 400
+        except KeyError :
+            return jsonify({'Invalid JSON Key': "Ensure the following keys exist 'title','status','due_date','description'"}), 400
+
         todo = task.query.filter_by(id=id).first()
         todo.title = title
         todo.description = description
