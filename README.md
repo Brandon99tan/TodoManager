@@ -13,6 +13,8 @@ This application is deployed at [https://todomanager-6euw.onrender.com](https://
 
 ## Running Unit Tests
 To run unit tests, navigate to the terminal and execute the following command:
+
+**Please note that the existing data in the Task Manager will be deleted when the tests are running**
 ```bash
 python -m pytest
 ```
