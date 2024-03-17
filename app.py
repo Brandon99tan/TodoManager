@@ -21,7 +21,7 @@ class statusEnum(enum.Enum):
 class task(db.Model):
     id = db.Column('task_id', db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(50))
+    description = db.Column(db.String(500))
     status = db.Column(Enum(statusEnum))
     due_date = db.Column(db.DateTime)
 
@@ -37,15 +37,18 @@ db.create_all()
 
 @app.route('/')
 def hello_world():
-    print(task.query.all())
+    print(task.query.filter_by(id = 1).all())
+    # v = task.query.filter_by(id = 1).all()
+    v=task.query.all()
     #print each task
     for task1 in task.query.all():
         print(task1,"task1")
+        print(task1.id, "task1.task_id")
         print(task1.title, "task1.title")
         print(task1.description, "task1.description")
         print(task1.status.value, "task1.status")
         print(task1.due_date, "task1.due_date")
-    return render_template('view.html', tasks=task.query.all())
+    return render_template('view.html', tasks=v)
 
 
 @app.route('/add_todo', methods=['POST'])
