@@ -1,22 +1,28 @@
 import enum
 from datetime import datetime
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 from sqlalchemy import Enum
 
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 
 app = Flask(__name__)
 app.app_context().push()
+app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///todo.sqlite3'
 db = SQLAlchemy(app)
 
+login_manager = LoginManager(app)
 
 class statusEnum(enum.Enum):
     Backlog = 'Backlog'
     Done = 'Done'
     Pending = 'In Progress'
 
+class Role(enum.Enum):
+    Developer = 'Developer'
+    ProjectManager = 'Project Manager'
 
 class task(db.Model):
     id = db.Column('task_id', db.Integer, primary_key=True)
@@ -26,16 +32,62 @@ class task(db.Model):
     due_date = db.Column(db.DateTime)
 
 
-def __init__(self, id, title, description, status, due_date):
-    self.id = id
-    self.title = title
-    self.description = description
-    self.status = status
-    self.due_date = due_date
+class user(UserMixin, db.Model):
+    id = db.Column('user_id', db.Integer, primary_key=True)
+    username = db.Column(db.String(100), nullable=False, unique=True)
+    password = db.Column(db.String(100), nullable=False)
+    role = db.Column(Enum(Role), default=Role.Developer)
+
+    def get_id(self):
+        return str(self.id)
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+#
+# def __init__(self, id, title, description, status, due_date):
+#     self.id = id
+#     self.title = title
+#     self.description = description
+#     self.status = status
+#     self.due_date = due_date
 db.create_all()
 
+@login_manager.user_loader
+def load_user(user_id):
+    # Load user by ID from the database
+    return user.query.get(int(user_id))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        User = user.query.filter_by(username=username).first()
+        if User and User.password == password:
+            login_user(User)
+            return redirect(url_for('hello_world'))
+        else:
+            return render_template('login.html', message='Invalid username or password')
+    return render_template('login.html')
+@app.route('/logout' ,methods=['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
 
 @app.route('/')
+def index():
+    return render_template('login.html')
+
+
+@app.route('/home')
 def hello_world():
 
     Tasks=task.query.all()
@@ -45,6 +97,7 @@ def hello_world():
 
 
 @app.route('/add_todo', methods=['POST'])
+@login_required
 def add_todo():
     if request.method == 'POST':
         try:
@@ -72,7 +125,11 @@ def add_todo():
     # return render_template('view.html', tasks=task.query.all())
 # delete records from a table
 @app.route('/delete_todo', methods=['DELETE'])
+@login_required
 def delete_todo():
+    if current_user.role != Role.ProjectManager:  # Check if user is a Project Manager
+        return jsonify({'error': 'Only Project Managers can delete tasks.'}), 403
+
     if request.method == 'DELETE':
         id = request.json['id']
         todo = task.query.filter_by(id=id).first()
@@ -83,6 +140,7 @@ def delete_todo():
 
 #edit records from a table
 @app.route('/edit_todo', methods=['PUT'])
+@login_required
 def edit_todo():
     if request.method == 'PUT':
         try:

@@ -11,9 +11,18 @@
 <body>
 <div class="container">
     <h1>Task Manager - Done by Brandon</h1>
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Create New
-        Task
+
+<div class="d-flex justify-content-between">
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Create New Task
     </button>
+
+    <!-- Logout button -->
+    <form action="/logout" method="post">
+        <button type="submit" class="btn btn-danger">Logout</button>
+    </form>
+</div>
 
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -71,9 +80,12 @@
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#editModal{{ task.id }}">Edit Task
                                 </button>
-                                <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i
-                                        class="fa-regular fa-trash-can"></i>
-                                </button>
+
+                                {% if current_user.role.value == 'Project Manager' %}
+                                    <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i
+                                            class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                {% endif %}
                                 <div class="modal fade" id="editModal{{ task.id }}" tabindex="-1"
                                      aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
@@ -144,9 +156,11 @@
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#editModal{{ task.id }}">Edit Task
                                 </button>
-                                <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i
-                                        class="fa-regular fa-trash-can"></i>
-                                </button>
+                                {% if current_user.role.value == 'Project Manager' %}
+                                    <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i
+                                            class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                {% endif %}
                                 <div class="modal fade" id="editModal{{ task.id }}" tabindex="-1"
                                      aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
@@ -217,9 +231,11 @@
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#editModal{{ task.id }}">Edit Task
                                 </button>
-                                <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i
-                                        class="fa-regular fa-trash-can"></i>
-                                </button>
+                                {% if current_user.role.value == 'Project Manager' %}
+                                    <button type="button" class="btn btn-danger" onclick="deleteTask({{ task.id }})"><i
+                                            class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                {% endif %}
                                 <div class="modal fade" id="editModal{{ task.id }}" tabindex="-1"
                                      aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
@@ -320,7 +336,7 @@
             .then(response => {
                 if (response.ok) {
                     // Redirect to home page upon successful submission
-                    window.location.href = "/";
+                    window.location.href = "/home";
                 } else {
                     console.error('Error:', response.statusText);
                 }
@@ -363,7 +379,7 @@
             .then(response => {
                 if (response.ok) {
                     // Redirect to home page upon successful submission
-                    window.location.href = "/";
+                    window.location.href = "/home";
                 } else {
                     console.error('Error:', response.statusText);
                 }
@@ -389,7 +405,7 @@
             .then(response => {
                 if (response.ok) {
                     // Redirect to home page upon successful submission
-                    window.location.href = "/";
+                    window.location.href = "/home";
                 } else {
                     console.error('Error:', response.statusText);
                 }
